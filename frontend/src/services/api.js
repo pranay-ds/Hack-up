@@ -1,5 +1,5 @@
-const API_BASE = "http://localhost:8000/api/v1";
-const WS_URL = "ws://localhost:8000/api/v1/stream";
+const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1").replace(/\/$/, "");
+const WS_URL = import.meta.env.VITE_WS_URL || API_BASE.replace(/^http/, "ws").replace(/\/api\/v1$/, "/api/v1/stream");
 
 export async function fetchHealth() {
   const res = await fetch(`${API_BASE}/health`);

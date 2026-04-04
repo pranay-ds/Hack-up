@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
+import os
 
 from api.routes import router
 
@@ -10,11 +11,14 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# Allow frontend to communicate with API
+cors_origins_env = os.getenv("CORS_ORIGINS", "*")
+allow_all_origins = cors_origins_env.strip() == "*"
+cors_origins = ["*"] if allow_all_origins else [o.strip() for o in cors_origins_env.split(",") if o.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], # In production, restrict this
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=not allow_all_origins,
     allow_methods=["*"],
     allow_headers=["*"],
 )

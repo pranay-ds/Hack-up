@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { evaluateTransaction } from "../services/api";
+import { evaluateTransaction, connectWebSocket } from "../services/api";
 import { mockFraudService } from "../services/mockFraudService";
 
 const DEVICES = ["Desktop", "Mobile", "Tablet", "POS Terminal", "API"];
@@ -136,49 +136,36 @@ export function useFraudData() {
 
   // WebSocket bonus stream
   useEffect(() => {
-    let ws;
-    let reconnectTimer;
-
-    const connect = () => {
-      try {
-        ws = new WebSocket("ws://localhost:8000/api/v1/stream");
-        ws.onopen = () => setStreamStatus("connected");
-        ws.onclose = () => { reconnectTimer = setTimeout(connect, 5000); };
-        ws.onerror = () => { if (ws) ws.close(); };
-        ws.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            setTransactions(prev => {
-              if (prev.some(t => t.id === data.transaction_id)) return prev;
-              const tx = {
-                id: data.transaction_id || randomId(),
-                user_id: data.user_id || "unknown",
-                amount: typeof data.amount === "number" ? data.amount : 0,
-                currency: data.currency || "USD",
-                device: data.device_id || data.device || "unknown",
-                location: data.location || "unknown",
-                merchant: data.merchant_id || data.merchant || "unknown",
-                timestamp: data.timestamp || new Date().toISOString(),
-                time: new Date().toLocaleTimeString(),
-                risk_score: typeof data.risk_score === "number" ? data.risk_score : 0,
-                decision: data.decision || "APPROVE",
-                reasons: Array.isArray(data.reasons) ? data.reasons : [],
-                user_override: null,
-                marked_fraud: false,
-                marked_legit: false,
-              };
-              return [tx, ...prev].slice(0, 500);
-            });
-          } catch { /* skip */ }
-        };
-      } catch { /* skip */ }
-    };
-
-    connect();
+    const disconnect = connectWebSocket(
+      (data) => {
+        setTransactions((prev) => {
+          if (prev.some((t) => t.id === data.transaction_id)) return prev;
+          const tx = {
+            id: data.transaction_id || randomId(),
+            user_id: data.user_id || "unknown",
+            amount: typeof data.amount === "number" ? data.amount : 0,
+            currency: data.currency || "USD",
+            device: data.device_id || data.device || "unknown",
+            location: data.location || "unknown",
+            merchant: data.merchant_id || data.merchant || "unknown",
+            timestamp: data.timestamp || new Date().toISOString(),
+            time: new Date().toLocaleTimeString(),
+            risk_score: typeof data.risk_score === "number" ? data.risk_score : 0,
+            decision: data.decision || "APPROVE",
+            reasons: Array.isArray(data.reasons) ? data.reasons : [],
+            user_override: null,
+            marked_fraud: false,
+            marked_legit: false,
+          };
+          return [tx, ...prev].slice(0, 500);
+        });
+      },
+      () => setStreamStatus("connected"),
+      () => setStreamStatus((prev) => (prev === "connecting" ? prev : "connecting"))
+    );
 
     return () => {
-      if (reconnectTimer) clearTimeout(reconnectTimer);
-      if (ws) { ws.onclose = null; ws.close(); }
+      disconnect();
     };
   }, []);
 
