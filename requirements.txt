@@ -1,0 +1,17 @@
+fastapi
+uvicorn
+pydantic
+kafka-python
+redis
+neo4j
+psycopg2-binary
+sqlalchemy
+scikit-learn
+xgboost
+lightgbm
+shap
+feast
+pandas
+numpy
+pytest
+requests
