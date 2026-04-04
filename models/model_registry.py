@@ -2,7 +2,16 @@ import os
 import joblib
 import pandas as pd
 import logging
-import shap
+
+ENABLE_SHAP_EXPLANATIONS = os.getenv("ENABLE_SHAP_EXPLANATIONS", "0").strip().lower() in {"1", "true", "yes", "on"}
+
+if ENABLE_SHAP_EXPLANATIONS:
+    try:
+        import shap
+    except Exception:  # pragma: no cover - defensive for production runtime differences
+        shap = None
+else:
+    shap = None
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +33,8 @@ class ModelRegistry:
         return self.models[model_name]
 
     def get_explainer(self, classifier):
+        if shap is None:
+            return None
         if "xgboost" not in self.explainers:
             self.explainers["xgboost"] = shap.TreeExplainer(classifier)
         return self.explainers["xgboost"]
@@ -51,23 +62,24 @@ def score_transaction(transaction: dict):
             # Get probability
             ensemble_score = xgboost_pipeline.predict_proba(df)[0][1]
             
-            # --- 2. Generate SHAP Explanations for insights ---
-            if ensemble_score > 0.4:
+            # --- 2. Generate SHAP Explanations for insights (optional, expensive) ---
+            if ENABLE_SHAP_EXPLANATIONS and ensemble_score > 0.7:
                 preprocessor = xgboost_pipeline.named_steps["preprocessor"]
                 classifier = xgboost_pipeline.named_steps["classifier"]
                 X_preprocessed = preprocessor.transform(df)
                 
                 explainer = registry.get_explainer(classifier)
-                shap_values = explainer.shap_values(X_preprocessed)
-                feature_names = preprocessor.get_feature_names_out()
-                
-                contributions = {feat: val for feat, val in zip(feature_names, shap_values[0])}
-                sorted_contributions = sorted(contributions.items(), key=lambda x: abs(x[1]), reverse=True)
-                
-                for feat, impact in sorted_contributions[:3]:
-                    clean_feat = feat.replace("num__", "").replace("cat__", "")
-                    if impact > 0:
-                        shap_reasons.append(f"AI Warning: {clean_feat} increases risk (+{impact:.2f} log-odds).")
+                if explainer is not None:
+                    shap_values = explainer.shap_values(X_preprocessed)
+                    feature_names = preprocessor.get_feature_names_out()
+
+                    contributions = {feat: val for feat, val in zip(feature_names, shap_values[0])}
+                    sorted_contributions = sorted(contributions.items(), key=lambda x: abs(x[1]), reverse=True)
+
+                    for feat, impact in sorted_contributions[:3]:
+                        clean_feat = feat.replace("num__", "").replace("cat__", "")
+                        if impact > 0:
+                            shap_reasons.append(f"AI Warning: {clean_feat} increases risk (+{impact:.2f} log-odds).")
         except Exception as e:
             logger.error(f"XGBoost scoring failed: {e}")
 

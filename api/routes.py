@@ -3,6 +3,7 @@ from .schemas import Transaction, RiskResponse
 from ingestion.producer import produce_transaction_event
 from decision_engine.decision import evaluate_transaction_pipeline
 from graph.neo4j_loader import neo4j_instance
+from storage.transaction_logger import log_decision_to_db
 import json
 import asyncio
 from kafka import KafkaConsumer
@@ -24,10 +25,17 @@ async def evaluate_transaction(transaction: Transaction, background_tasks: Backg
     # Convert Pydantic model to dictionary for the decision engine
     tx_dict = transaction.dict()
     
-    # Synchronous evaluation for immediate response
-    decision_result = evaluate_transaction_pipeline(tx_dict)
+    # Run scoring off the event loop and persist in background for lower p95 latency
+    decision_result = await asyncio.to_thread(evaluate_transaction_pipeline, tx_dict, False)
     
-    # Asynchronous tasks: Push to Kafka and update local UI
+    # Asynchronous tasks: persist, push to Kafka, and update local UI
+    background_tasks.add_task(
+        log_decision_to_db,
+        transaction_id=transaction.transaction_id,
+        decision=decision_result["decision"],
+        risk_score=decision_result["risk_scores"].get("ensemble_score", 0.0),
+        reasons=decision_result["reasons"],
+    )
     background_tasks.add_task(produce_transaction_event, tx_dict)
     background_tasks.add_task(broadcast_to_ui, decision_result)
     

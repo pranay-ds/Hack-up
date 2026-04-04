@@ -64,6 +64,7 @@ export function useFraudData() {
   const [streamStatus, setStreamStatus] = useState("connecting");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [apiLatencyMs, setApiLatencyMs] = useState(null);
   const trafficRef = useRef(null);
 
   // Send traffic every 1.5s via HTTP and add result directly
@@ -73,7 +74,9 @@ export function useFraudData() {
     const sendTraffic = async () => {
       try {
         const payload = generatePayload();
+        const start = Date.now();
         const result = await evaluateTransaction(payload);
+        setApiLatencyMs(Date.now() - start);
         if (!active) return;
 
         const tx = {
@@ -101,6 +104,7 @@ export function useFraudData() {
       } catch (err) {
         if (!active) return;
         setError(err.message);
+        setApiLatencyMs(null);
         setStreamStatus("error");
         const mockTx = mockFraudService.generateTransaction();
         const tx = { ...mockTx, time: new Date().toLocaleTimeString(), timestamp: new Date().toISOString() };
@@ -270,7 +274,7 @@ export function useFraudData() {
 
   return {
     transactions, stats, mfaTransactions, alerts, userProfiles, fraudRings, fraudChains, modelMetrics,
-    streamStatus, loading, error,
+    streamStatus, loading, error, apiLatencyMs,
     overrideDecision, markAsFraud, markAsLegitimate, applyUserAction,
   };
 }

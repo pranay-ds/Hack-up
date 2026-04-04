@@ -2,7 +2,7 @@ from rules.rules_engine import run_rules
 from models.model_registry import score_transaction
 from storage.transaction_logger import log_decision_to_db
 
-def evaluate_transaction_pipeline(transaction: dict):
+def evaluate_transaction_pipeline(transaction: dict, persist: bool = True):
     """
     Core pipeline: executes rules, ML models, and outputs a final decision.
     """
@@ -39,13 +39,13 @@ def evaluate_transaction_pipeline(transaction: dict):
         else:
             decision = "APPROVE"
         
-    # --- PHASE 3: WRITE TO PERSISTENT SQL DATABASE ---
-    log_decision_to_db(
-        transaction_id=transaction.get("transaction_id"),
-        decision=decision,
-        risk_score=ml_scores.get("ensemble_score", 0.0),
-        reasons=reasons
-    )
+    if persist:
+        log_decision_to_db(
+            transaction_id=transaction.get("transaction_id"),
+            decision=decision,
+            risk_score=ml_scores.get("ensemble_score", 0.0),
+            reasons=reasons
+        )
         
     return {
         "transaction_id": transaction.get("transaction_id"),

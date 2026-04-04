@@ -1,4 +1,4 @@
-export default function AppLayout({ route, setRoute, streamStatus, session, onLogout, children }) {
+export default function AppLayout({ route, setRoute, streamStatus, apiLatencyMs, session, onLogout, children }) {
   const navItems = [
     { key: "dashboard", label: "Dashboard" },
     { key: "transactions", label: "Transactions" },
@@ -71,6 +71,24 @@ export default function AppLayout({ route, setRoute, streamStatus, session, onLo
       </aside>
 
       <main style={{ flex: 1, overflow: "auto" }}>
+        {(streamStatus !== "connected" || (typeof apiLatencyMs === "number" && apiLatencyMs > 1400)) && (
+          <div
+            style={{
+              margin: "10px 14px 0",
+              padding: "8px 10px",
+              borderRadius: 6,
+              border: `1px solid ${streamStatus === "error" ? "rgba(239,68,68,0.3)" : "rgba(251,191,36,0.3)"}`,
+              background: streamStatus === "error" ? "rgba(239,68,68,0.08)" : "rgba(251,191,36,0.08)",
+              color: streamStatus === "error" ? "#fca5a5" : "#fcd34d",
+              fontSize: 11,
+              letterSpacing: 0.1,
+            }}
+          >
+            {streamStatus === "error"
+              ? "Backend degraded. Dashboard is using fallback data while the API recovers."
+              : `Backend warming up${typeof apiLatencyMs === "number" ? ` (${apiLatencyMs}ms)` : ""}. Live stream will stabilize shortly.`}
+          </div>
+        )}
         {children}
       </main>
     </div>

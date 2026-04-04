@@ -27,7 +27,7 @@ function AuthenticatedApp({ route, setRoute, session, logout }) {
   }, [route, fraudData, session, settings]);
 
   return (
-    <AppLayout route={route} setRoute={setRoute} streamStatus={fraudData.streamStatus} session={session} onLogout={logout}>
+    <AppLayout route={route} setRoute={setRoute} streamStatus={fraudData.streamStatus} apiLatencyMs={fraudData.apiLatencyMs} session={session} onLogout={logout}>
       {page}
     </AppLayout>
   );
