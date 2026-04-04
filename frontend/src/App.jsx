@@ -35,10 +35,10 @@ function AuthenticatedApp({ route, setRoute, session, logout }) {
 
 function App() {
   const { route, setRoute } = useHashRoute();
-  const { session, login, logout } = useAuth();
+  const { session, login, logout, register } = useAuth();
 
   if (!session) {
-    return <LoginPage onLogin={login} />;
+    return <LoginPage onLogin={login} onRegister={register} />;
   }
 
   return <AuthenticatedApp route={route} setRoute={setRoute} session={session} logout={logout} />;

@@ -1,39 +1,12 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 
-const USERS = {
-  admin: { password: "admin123", role: "admin", name: "Admin User" },
-  analyst: { password: "analyst123", role: "user", name: "Fraud Analyst" },
-  user: { password: "user123", role: "user", name: "Regular User" },
-};
+const DEMO_USERS = [
+  { username: "admin", password: "admin123" },
+  { username: "analyst", password: "analyst123" },
+  { username: "user", password: "user123" },
+];
 
-export function useAuth() {
-  const [session, setSession] = useState(() => {
-    try {
-      const stored = localStorage.getItem("sentinel_auth");
-      return stored ? JSON.parse(stored) : null;
-    } catch { return null; }
-  });
-
-  const login = useCallback((username, password) => {
-    const u = USERS[username];
-    if (u && u.password === password) {
-      const s = { username, role: u.role, name: u.name };
-      localStorage.setItem("sentinel_auth", JSON.stringify(s));
-      setSession(s);
-      return { ok: true };
-    }
-    return { ok: false, error: "Invalid credentials" };
-  }, []);
-
-  const logout = useCallback(() => {
-    localStorage.removeItem("sentinel_auth");
-    setSession(null);
-  }, []);
-
-  return { session, login, logout };
-}
-
-export default function LoginPage({ onLogin }) {
+export default function LoginPage({ onLogin, onRegister }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -42,14 +15,27 @@ export default function LoginPage({ onLogin }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (mode === "register") {
-      USERS[username] = { password, role: regRole, name: username };
-      const result = onLogin(username, password);
-      if (!result.ok) setError(result.error);
+    const normalizedUsername = String(username || "").trim().toLowerCase();
+    const normalizedPassword = String(password || "").trim();
+
+    if (!normalizedUsername || !normalizedPassword) {
+      setError("Username and password are required");
       return;
     }
-    const result = onLogin(username, password);
+
+    if (mode === "register") {
+      if (typeof onRegister !== "function") {
+        setError("Registration is not available");
+        return;
+      }
+      const result = onRegister(normalizedUsername, normalizedPassword, regRole);
+      if (!result.ok) setError(result.error);
+      else setError("");
+      return;
+    }
+    const result = onLogin(normalizedUsername, normalizedPassword);
     if (!result.ok) setError(result.error);
+    else setError("");
   };
 
   return (
@@ -92,9 +78,9 @@ export default function LoginPage({ onLogin }) {
             <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid #1a1a1a" }}>
               <div style={{ fontSize: 10, color: "#888", marginBottom: 8 }}>Demo Credentials:</div>
               <div style={{ fontSize: 11, color: "#666", lineHeight: 1.8 }}>
-                <div><span style={{ color: "#ccc" }}>admin</span> / admin123</div>
-                <div><span style={{ color: "#ccc" }}>analyst</span> / analyst123</div>
-                <div><span style={{ color: "#ccc" }}>user</span> / user123</div>
+                {DEMO_USERS.map((u) => (
+                  <div key={u.username}><span style={{ color: "#ccc" }}>{u.username}</span> / {u.password}</div>
+                ))}
               </div>
             </div>
             <button type="button" onClick={() => { setMode("register"); setError(""); }} style={{ ...linkBtn, marginTop: 12 }}>
