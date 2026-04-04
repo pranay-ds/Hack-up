@@ -1,14 +1,26 @@
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api/v1").replace(/\/$/, "");
 const WS_URL = import.meta.env.VITE_WS_URL || API_BASE.replace(/^http/, "ws").replace(/\/api\/v1$/, "/api/v1/stream");
+const REQUEST_TIMEOUT_MS = Number(import.meta.env.VITE_API_TIMEOUT_MS || 8000);
+
+async function fetchWithTimeout(url, options = {}, timeoutMs = REQUEST_TIMEOUT_MS) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export async function fetchHealth() {
-  const res = await fetch(`${API_BASE}/health`);
+  const res = await fetchWithTimeout(`${API_BASE}/health`);
   if (!res.ok) throw new Error("Backend unreachable");
   return res.json();
 }
 
 export async function evaluateTransaction(payload) {
-  const res = await fetch(`${API_BASE}/evaluate`, {
+  const res = await fetchWithTimeout(`${API_BASE}/evaluate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
@@ -22,7 +34,7 @@ export async function evaluateTransaction(payload) {
 
 export async function fetchGraphData() {
   try {
-    const res = await fetch(`${API_BASE}/graph`);
+    const res = await fetchWithTimeout(`${API_BASE}/graph`);
     if (!res.ok) return null;
     return res.json();
   } catch {
