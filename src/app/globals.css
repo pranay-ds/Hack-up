@@ -1,0 +1,90 @@
+@import "tailwindcss";
+
+:root {
+  --blue:    #387ed1;
+  --green:   #4caf50;
+  --red:     #e53935;
+  --yellow:  #ffb300;
+  
+  --bg:      #ffffff;
+  --bg2:     #f9f9f9;
+  --surface: #ffffff;
+  --border:  #eeeeee;
+  --border2: #dddddd;
+  
+  --text:       #444444;
+  --text-muted: #888888;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar       { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: #cccccc; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* Animations - Simplified for professional look */
+@keyframes fade-up {
+  from { opacity:0; transform:translateY(8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+@keyframes spin {  to { transform: rotate(360deg); } }
+
+.animate-fade-up         { animation: fade-up 0.3s ease both; }
+.animate-spin            { animation: spin 0.8s linear infinite; }
+
+/* Keep classes for compatibility but remove flashy effects */
+.pulse-green  { background-color: var(--green); }
+.pulse-yellow { background-color: var(--yellow); }
+.pulse-red    { background-color: var(--red); }
+
+/* Gradient text flattened to solid brand color */
+.grad-text {
+  color: var(--blue);
+  font-weight: 600;
+}
+.grad-text-green { color: var(--green); }
+.grad-text-danger { color: var(--red); }
+
+/* Shimmer bar flattened to simple progress bar */
+.shimmer-bar {
+  background: var(--blue);
+  border-radius: 4px;
+}
+
+/* Glass card flattened to standard corporate card */
+.glass {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  border-radius: 4px;
+}
+.glass:hover {
+  border-color: #cccccc;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.06);
+}
+
+.mono { font-family: 'Inter', sans-serif; }
+
+/* Recharts tooltip override */
+.recharts-tooltip-wrapper { outline: none !important; }
+.custom-tooltip {
+  background: #ffffff !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 4px !important;
+  padding: 8px 12px !important;
+  font-size: 0.8rem !important;
+  color: var(--text) !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
