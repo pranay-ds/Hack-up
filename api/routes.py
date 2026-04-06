@@ -8,6 +8,9 @@ import json
 import asyncio
 from kafka import KafkaConsumer
 
+import logging
+
+logger = logging.getLogger("sentinel.routes")
 router = APIRouter()
 
 # Local event bus for UI updates (works without Kafka)
@@ -20,15 +23,20 @@ async def broadcast_to_ui(data: dict):
 @router.post("/evaluate", response_model=RiskResponse)
 async def evaluate_transaction(transaction: Transaction, background_tasks: BackgroundTasks):
     """
-    Ingest a transaction synchronously, and push it to Kafka for streaming analysis.
+    Ingest a transaction synchronously, scoring it against rules and ML models.
+    
+    The evaluation pipeline is offloaded to a separate thread to ensure low-latency 
+    response time. Standard operational logging, data persistence, and event 
+    broadcasting are handled asynchronously via background tasks.
     """
-    # Convert Pydantic model to dictionary for the decision engine
     tx_dict = transaction.dict()
     
-    # Run scoring off the event loop and persist in background for lower p95 latency
+    logger.info(f"Received transaction for evaluation: {transaction.transaction_id}")
+    
+    # Offload CPU-intensive decision logic to a worker thread
     decision_result = await asyncio.to_thread(evaluate_transaction_pipeline, tx_dict, False)
     
-    # Asynchronous tasks: persist, push to Kafka, and update local UI
+    # Execute non-blocking I/O tasks in the background
     background_tasks.add_task(
         log_decision_to_db,
         transaction_id=transaction.transaction_id,
@@ -38,6 +46,8 @@ async def evaluate_transaction(transaction: Transaction, background_tasks: Backg
     )
     background_tasks.add_task(produce_transaction_event, tx_dict)
     background_tasks.add_task(broadcast_to_ui, decision_result)
+    
+    logger.info(f"Evaluation complete for {transaction.transaction_id} | Decision: {decision_result['decision']}")
     
     return RiskResponse(
         transaction_id=transaction.transaction_id,

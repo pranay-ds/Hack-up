@@ -33,9 +33,9 @@ export default function UserLoginPage() {
             <Shield className="w-7 h-7" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-gray-900">
-            FFDS Portal
+            Sentinel Portal
           </h1>
-          <p className="text-gray-500 text-sm mt-1.5 font-medium">Fraud Detection System · User Login</p>
+          <p className="text-gray-500 text-sm mt-1.5 font-medium">Sentinel Fraud Platform · User Login</p>
         </div>
 
         {/* Form */}
@@ -49,7 +49,7 @@ export default function UserLoginPage() {
                 type="email"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="analyst@ffds.io"
+                placeholder="analyst@sentinel.ai"
                 className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-200 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-[#387ed1] transition-all bg-white"
               />
             </div>
@@ -115,7 +115,7 @@ export default function UserLoginPage() {
         </a>
 
         <p className="text-center text-xs text-gray-400 mt-8 font-medium">
-          Protected by FFDS — AI Fraud Detection System
+          Protected by Sentinel - AI Fraud Detection System
         </p>
       </div>
     </div>

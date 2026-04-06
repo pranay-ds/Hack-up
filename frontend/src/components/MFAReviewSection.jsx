@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 export default function MFAReviewSection({ mfaTransactions, overrideDecision, markAsFraud, markAsLegitimate }) {
   const [selectedTx, setSelectedTx] = useState(null);

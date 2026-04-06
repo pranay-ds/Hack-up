@@ -6,9 +6,15 @@ import os
 from api.routes import router
 
 app = FastAPI(
-    title="Fraud Detection API",
-    description="Real-time financial fraud detection API",
-    version="1.0.0"
+    title="Sentinel Fraud Detection Platform",
+    description=(
+        "Sentinel is a state-of-the-art real-time financial fraud detection service. "
+        "It combines deterministic rule engines with machine learning models and "
+        "asynchronous background tasks for high-throughput decisioning."
+    ),
+    version="1.0.0",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
 )
 
 cors_origins_env = os.getenv("CORS_ORIGINS", "*")

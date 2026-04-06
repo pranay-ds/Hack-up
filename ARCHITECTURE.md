@@ -122,7 +122,7 @@ Render Static Site (Frontend)
         |
         v
 Render Web Service (Backend API)
-  https://godsec.onrender.com/api/v1
+  https://hackup-api.onrender.com/api/v1
 ```
 
 Important detail:

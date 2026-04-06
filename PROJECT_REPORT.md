@@ -15,8 +15,8 @@ Current public app link:
 - Frontend: `https://hackup-frontend.onrender.com`
 
 Backend API link:
-- API: `https://godsec.onrender.com/api/v1`
-- Health check: `https://godsec.onrender.com/api/v1/health`
+- API: `https://hackup-api.onrender.com/api/v1`
+- Health check: `https://hackup-api.onrender.com/api/v1/health`
 
 
 ## 2) Business Goal

@@ -83,7 +83,7 @@ export default function SettingsPage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[
-            { label: 'Backend API Key',  val: 'sk-ffds-••••••••••••••••••2a4f' },
+            { label: 'Backend API Key',  val: 'sk-sentinel-••••••••••••••••2a4f' },
             { label: 'ML Model Endpoint',val: 'http://localhost:8000/api/v1' },
             { label: 'Alert Webhook',    val: 'https://hooks.example.com/••••' },
             { label: 'Geo API Token',    val: 'geo_••••••••••••••••••••••3b8c' },

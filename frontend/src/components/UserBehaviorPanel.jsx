@@ -175,13 +175,24 @@ function AnomalyCard({ profile, onAction }) {
 }
 
 export default function UserBehaviorPanel({ userProfiles, onUserAction }) {
-  const [profiles, setProfiles] = useState(() => ({ ...(userProfiles || {}) }));
+  const [profileOverrides, setProfileOverrides] = useState({});
   const [feedback, setFeedback] = useState(null);
   const feedbackTimerRef = useRef(null);
 
-  useEffect(() => {
-    setProfiles({ ...(userProfiles || {}) });
-  }, [userProfiles]);
+  const mergedProfiles = useMemo(() => {
+    const baseProfiles = { ...(userProfiles || {}) };
+
+    Object.entries(profileOverrides).forEach(([userId, override]) => {
+      if (baseProfiles[userId]) {
+        baseProfiles[userId] = {
+          ...baseProfiles[userId],
+          ...override,
+        };
+      }
+    });
+
+    return baseProfiles;
+  }, [userProfiles, profileOverrides]);
 
   useEffect(() => {
     return () => {
@@ -190,7 +201,7 @@ export default function UserBehaviorPanel({ userProfiles, onUserAction }) {
   }, []);
 
   const flaggedUsers = useMemo(() => {
-    return Object.values(profiles)
+    return Object.values(mergedProfiles)
       .filter(p => p.anomaly_flags.length > 0 || (p.risk_trend.length > 0 && p.risk_trend[p.risk_trend.length - 1]?.score > 0.5))
       .sort((a, b) => {
         const aScore = a.risk_trend.length > 0 ? a.risk_trend[a.risk_trend.length - 1]?.score : 0;
@@ -198,33 +209,30 @@ export default function UserBehaviorPanel({ userProfiles, onUserAction }) {
         return bScore - aScore;
       })
       .slice(0, 10);
-  }, [profiles]);
+  }, [mergedProfiles]);
 
   const handleAction = (userId, action) => {
-    setProfiles((prev) => {
-      const profile = prev[userId];
-      if (!profile) return prev;
+    const profile = mergedProfiles[userId];
+    if (!profile) return;
 
-      const latest = profile.risk_trend.length > 0 ? profile.risk_trend[profile.risk_trend.length - 1]?.score : 0.5;
-      const nextScore = action === "block"
-        ? Math.min(0.99, latest + 0.25)
-        : action === "mfa"
-          ? Math.min(0.92, latest + 0.08)
-          : Math.max(0.1, latest - 0.35);
+    const latest = profile.risk_trend.length > 0 ? profile.risk_trend[profile.risk_trend.length - 1]?.score : 0.5;
+    const nextScore = action === "block"
+      ? Math.min(0.99, latest + 0.25)
+      : action === "mfa"
+        ? Math.min(0.92, latest + 0.08)
+        : Math.max(0.1, latest - 0.35);
 
-      const nextTrend = [...profile.risk_trend, { time: new Date().toISOString(), score: nextScore }].slice(-120);
+    const nextTrend = [...profile.risk_trend, { time: new Date().toISOString(), score: nextScore }].slice(-120);
 
-      return {
-        ...prev,
-        [userId]: {
-          ...profile,
-          anomaly_flags: action === "safe" ? [] : profile.anomaly_flags,
-          risk_trend: nextTrend,
-          analyst_action: action,
-          analyst_action_at: new Date().toISOString(),
-        },
-      };
-    });
+    setProfileOverrides((prev) => ({
+      ...prev,
+      [userId]: {
+        anomaly_flags: action === "safe" ? [] : profile.anomaly_flags,
+        risk_trend: nextTrend,
+        analyst_action: action,
+        analyst_action_at: new Date().toISOString(),
+      },
+    }));
 
     if (typeof onUserAction === "function") {
       onUserAction(userId, action);

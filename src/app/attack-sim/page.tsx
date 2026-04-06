@@ -39,7 +39,7 @@ export default function AttackSimPage() {
   const startSim = (scenario: Scenario) => {
     if (running) return;
     setRunning(scenario.id);
-    setLogs([{ text: `\n[FFDS] Launching: ${scenario.name}`, type: 'dim' }]);
+    setLogs([{ text: `\n[SENTINEL] Launching: ${scenario.name}`, type: 'dim' }]);
 
     const lines = TERMINAL_LINES[scenario.id] ?? [];
     lines.forEach((line, i) => {

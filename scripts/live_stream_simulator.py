@@ -6,7 +6,7 @@ from ingestion.producer import produce_transaction_event
 print("Waiting 15 seconds for Kafka broker to come online...")
 time.sleep(15)
 
-def stream_real_data(csv_file="Bank_Transaction_Fraud_Detection.csv"):
+def stream_real_data(csv_file="data/Bank_Transaction_Fraud_Detection.csv"):
     print(f"Reading real transactions from {csv_file}...")
     
     try:

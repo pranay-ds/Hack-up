@@ -4,8 +4,8 @@ import Script from "next/script";
 import AppLayout from "@/components/AppLayout";
 
 export const metadata: Metadata = {
-  title: "FFDS — AI Fraud Detection System",
-  description: "AI-Powered Financial Fraud Detection Dashboard — Real-time monitoring, behavioral analysis, and risk scoring.",
+  title: "Sentinel - AI Fraud Detection System",
+  description: "Sentinel AI-powered fraud detection dashboard for real-time monitoring, behavioral analysis, and risk scoring.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

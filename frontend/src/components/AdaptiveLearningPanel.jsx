@@ -14,12 +14,6 @@ export default function AdaptiveLearningPanel({ modelMetrics }) {
   });
 
   useEffect(() => {
-    if (history && history.length > 0) {
-      setStreamHistory(history.slice(-MAX_POINTS).map((h, i) => ({ ...h, epoch: i })));
-    }
-  }, [history]);
-
-  useEffect(() => {
     const timer = setInterval(() => {
       setStreamHistory((prev) => {
         const last = prev[prev.length - 1] || { accuracy: accuracy || 0.85, drift: drift || 0.02, epoch: 0 };

@@ -1,56 +1,125 @@
-# 🛡️ Sentinel: Production-Grade Fraud Detection System
+# 🛡️ Project Sentinel: Real-Time Fraud Operations Platform
 
-This project is a localized, real-time financial fraud detection system utilizing a modular architecture. While the infrastructure supports heavy Kafka streaming and PyFlink processing via Docker, the codebase is configured to intelligently fall back to a purely native Python execution mode for immediate local testing.
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://hackup-frontend.onrender.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Stack: FastAPI + React](https://img.shields.io/badge/Stack-FastAPI%20%2B%20React-blue?style=for-the-badge)](https://fastapi.tiangolo.com/)
+
+**Sentinel** is a production-grade fraud detection and analyst operations platform designed for high-throughput financial environments. It integrates deterministic rule-based checks with advanced machine learning risk scoring to provide real-time decisioning and live monitoring.
 
 ---
 
-## 🚀 Quick Run Guide (No Docker Required)
+## 🚀 Live Environment
 
-To see the system evaluating anomalies in real-time, you need to open **three separate terminal windows**.
+The platform is fully deployed and accessible:
 
-### 1. Start the API Gateway
-The API receives transaction payloads. If Kafka is absent, it routes payloads directly to our ML Ensemble & Rules Engine.
+*   **Analyst Dashboard:** [https://hackup-frontend.onrender.com](https://hackup-frontend.onrender.com)
+*   **Backend API:** [https://hackup-api.onrender.com/api/v1](https://hackup-api.onrender.com/api/v1)
+*   **System Health:** [https://hackup-api.onrender.com/api/v1/health](https://hackup-api.onrender.com/api/v1/health)
 
-Open Terminal 1 in the project root (`olaa/`) and run:
-```powershell
+---
+
+## 🛠️ System Architecture
+
+Sentinel employs a modular architecture designed for low-latency decisioning and high observability.
+
+```mermaid
+graph TD
+    A[Client Transaction] --> B{Sentinel API /evaluate}
+    B --> C[Rules Engine]
+    B --> D[ML Risk Scoring]
+    C --> E{Decision Engine}
+    D --> E
+    E -->|APPROVE/MFA/BLOCK| F[API Response]
+    E --> G[(Decision Ledger)]
+    E --> H[WebSocket Stream]
+    H --> I[Analyst Dashboard]
+    I --> J[Manual Overrides]
+    J --> B
+```
+
+---
+
+## 📦 Getting Started (Local Setup)
+
+Follow these steps to clone and run the Sentinel platform on your local machine.
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/pranay-ds/GODSEC.git
+cd GODSEC
+```
+
+### 2. Backend Setup (FastAPI)
+Create a virtual environment and install dependencies:
+```bash
+# Create venv
+python -m venv .venv
+source .venv/bin/activate  # Windows: .venv\Scripts\activate
+
+# Install requirements
+pip install -r requirements.txt
+
+# Start the API service
 python -m api.app
 ```
-*(You will see a "Failed to connect to Kafka" warning—this is expected. The API has successfully switched to Fallback Mode and is running on port 8000).*
+The API will be available at `http://localhost:8000`.
 
-### 2. Launch the Threat Dashboard
-The frontend is a beautifully styled React + Vite glassmorphic UI visualizing the real-time datastream.
-
-Open Terminal 2, navigate to the frontend directory, and start the Vite server:
-```powershell
+### 3. Frontend Setup (React + Vite)
+Install dependencies and start the development server:
+```bash
 cd frontend
-npm.cmd run dev
+npm install
+npm run dev
 ```
-*(Once running, `CTRL + Click` the `http://localhost:5173` link in the terminal to view the dashboard in your browser).*
+The dashboard will be available at `http://localhost:5173`.
 
-### 3. Generate Synthetic Traffic
-We need transactions to evaluate! This testing script acts as a firehose, blasting the API with both legitimate and synthetic fraudulent transactions.
-
-Open Terminal 3 in the project root (`olaa/`) and run:
-```powershell
-python tests/test_pipeline.py
+### 4. Continuous Traffic Generation (Demo Mode)
+To see the dashboard in action with live simulated data, run the pipeline simulator in a separate terminal:
+```bash
+python scripts/live_stream_simulator.py
 ```
-
-### 🎉 The Result
-Return to your browser where the React Dashboard is open. You will immediately see the transaction pipeline react in real-time as the Python server evaluates risk scores and outputs `APPROVE`, `MFA`, or `BLOCK` verdicts on the fly!
 
 ---
 
-## 🏗️ Phase 2: Full Distributed Mode (Requires Docker)
+## 📂 Repository Structure
 
-To run the system explicitly through the asynchronous Streaming pipeline instead of the API fallback:
+*   `api/` - Backend service (FastAPI)
+*   `frontend/` - Analyst dashboard (React/Vite)
+*   `scripts/` - Operational scripts and simulators
+*   `data/` - Dataset for demo and training
+*   `models/` - ML model registry and logic
 
-1. Ensure **Docker Desktop** is running.
-2. Spin up the infrastructure broker:
-   ```powershell
-   docker compose up -d
-   ```
-3. Start the Kafka Stream Processor in a terminal:
-   ```powershell
-   python streaming/flink_job.py
-   ```
-4. Start the API, Dashboard, and test scripts exactly as outlined in the quick run guide above. Payload data will now flow across Kafka topics before hitting the evaluation engine!
+---
+
+## 🛡️ Key Capabilities
+
+*   **Real-Time Decisioning:** Sub-second latency for `APPROVE`, `MFA`, or `BLOCK` verdicts.
+*   **Hybrid Intelligence:** Combines deterministic safety rules with probabilistic ML scoring.
+*   **Analyst Control Center:** Live-streaming dashboard with KPI tracking and one-click manual overrides.
+*   **Explainable Fraud (XAI):** Built-in support for SHAP-based feature importance on high-risk detections.
+*   **Resilient Infrastructure:** Graceful fallback mechanisms for degraded network or backend conditions.
+
+---
+
+## 🧪 Tech Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Backend** | Python, FastAPI, Pydantic, NumPy |
+| **ML Engine** | Scikit-learn, XGBoost, SHAP |
+| **Frontend** | React 19, Vite, Tailwind CSS, Recharts |
+| **Persistence** | SQLite (Ledger), Redis (Optional Cache) |
+| **Deployment** | Render (CI/CD), Docker Compose |
+
+---
+
+## 👤 Author
+
+**Pranay DS**
+*   GitHub: [@pranay-ds](https://github.com/pranay-ds)
+*   Repository: [GODSEC](https://github.com/pranay-ds/GODSEC)
+
+---
+
+> [!NOTE]
+> Sentinel is architected for scalability. While the demo environment uses SQLite for ease of deployment, the system is fully compatible with Kafka for event streaming and Neo4j for fraud ring visualization.

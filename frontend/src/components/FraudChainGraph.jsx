@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 
 const stageConfig = {
   login_anomaly: {
@@ -70,7 +70,7 @@ function RiskGauge({ score }) {
   );
 }
 
-function ChainStep({ stage, index, isLast, isExpanded, onClick }) {
+function ChainStep({ stage, isLast, isExpanded, onClick }) {
   const cfg = stageConfig[stage.type] || { icon: "•", title: stage.type, description: stage.detail, color: "#777", bg: "#0f0f0f", border: "#1a1a1a" };
 
   return (
@@ -114,7 +114,6 @@ function ChainStep({ stage, index, isLast, isExpanded, onClick }) {
 }
 
 function ChainCard({ chain, isExpanded, onToggle, onAction }) {
-  const cfg = stageConfig[chain.stages?.[0]?.type] || stageConfig.login_anomaly;
   const isCritical = chain.risk_score > 0.8;
 
   return (
@@ -169,7 +168,6 @@ function ChainCard({ chain, isExpanded, onToggle, onAction }) {
             <ChainStep
               key={i}
               stage={stage}
-              index={i}
               isLast={i === (chain.stages?.length || 0) - 1}
               isExpanded={true}
             />
@@ -202,49 +200,49 @@ function ChainCard({ chain, isExpanded, onToggle, onAction }) {
 
 export default function FraudChainGraph({ fraudChains }) {
   const [expandedChain, setExpandedChain] = useState(null);
-  const [chains, setChains] = useState(() => [...fraudChains]);
+  const [chainOverrides, setChainOverrides] = useState({});
   const [feedback, setFeedback] = useState(null);
 
-  useEffect(() => {
-    setChains([...fraudChains]);
-  }, [fraudChains]);
+  const mergedChains = useMemo(() => {
+    return (fraudChains || []).map((chain) => ({
+      ...chain,
+      ...(chainOverrides[chain.id] || {}),
+    }));
+  }, [fraudChains, chainOverrides]);
 
   const sortedChains = useMemo(() => {
-    return [...chains].sort((a, b) => b.risk_score - a.risk_score);
-  }, [chains]);
+    return [...mergedChains].sort((a, b) => b.risk_score - a.risk_score);
+  }, [mergedChains]);
 
   const handleAction = (chainId, action) => {
-    setChains((prev) =>
-      prev.map((chain) => {
-        if (chain.id !== chainId) return chain;
+    setChainOverrides((prev) => {
+      const baseChain = (fraudChains || []).find((chain) => chain.id === chainId);
+      if (!baseChain) return prev;
 
-        if (action === "block") {
-          return {
-            ...chain,
-            status: "active",
-            risk_score: Math.min(0.99, chain.risk_score + 0.08),
-          };
-        }
+      const existingOverride = prev[chainId] || {};
+      const currentRisk = existingOverride.risk_score ?? baseChain.risk_score;
+      let nextStatus = existingOverride.status ?? baseChain.status;
+      let nextRisk = currentRisk;
 
-        if (action === "mfa") {
-          return {
-            ...chain,
-            status: "investigating",
-            risk_score: Math.min(0.95, chain.risk_score + 0.03),
-          };
-        }
+      if (action === "block") {
+        nextStatus = "active";
+        nextRisk = Math.min(0.99, currentRisk + 0.08);
+      } else if (action === "mfa") {
+        nextStatus = "investigating";
+        nextRisk = Math.min(0.95, currentRisk + 0.03);
+      } else if (action === "safe") {
+        nextStatus = "mitigated";
+        nextRisk = Math.max(0.1, currentRisk - 0.2);
+      }
 
-        if (action === "safe") {
-          return {
-            ...chain,
-            status: "mitigated",
-            risk_score: Math.max(0.1, chain.risk_score - 0.2),
-          };
-        }
-
-        return chain;
-      })
-    );
+      return {
+        ...prev,
+        [chainId]: {
+          status: nextStatus,
+          risk_score: nextRisk,
+        },
+      };
+    });
 
     const label = action === "block" ? "User blocked" : action === "mfa" ? "MFA triggered" : "Marked safe";
     setFeedback(`${chainId}: ${label}`);
@@ -259,8 +257,8 @@ export default function FraudChainGraph({ fraudChains }) {
           <div style={{ fontSize: 9, color: "#999", marginTop: 1 }}>Account takeover sequences and attack patterns</div>
         </div>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <span style={{ fontSize: 9, color: "#777" }}>{chains.filter(c => c.status === "active").length} active</span>
-          <span style={{ fontSize: 9, color: "#777" }}>{chains.length} total</span>
+          <span style={{ fontSize: 9, color: "#777" }}>{sortedChains.filter(c => c.status === "active").length} active</span>
+          <span style={{ fontSize: 9, color: "#777" }}>{sortedChains.length} total</span>
         </div>
       </div>
 

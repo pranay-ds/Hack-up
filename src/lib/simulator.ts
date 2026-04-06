@@ -1,5 +1,5 @@
 // ============================================================
-// FFDS — Synthetic Data Simulator
+// Sentinel - Synthetic Data Simulator
 // Generates realistic transactions, fraud events, and metrics
 // ============================================================
 

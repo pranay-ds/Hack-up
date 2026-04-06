@@ -1,11 +1,7 @@
 import { useState } from "react";
 
-export default function SettingsPage({ settings, setSettings }) {
-  const [local, setLocal] = useState(settings);
-
-  const save = () => setSettings(local);
-
-  const Toggle = ({ label, value, onChange }) => (
+function ToggleSwitch({ label, value, onChange }) {
+  return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid #1a1a1a" }}>
       <span style={{ fontSize: 12, color: "#ccc" }}>{label}</span>
       <button onClick={() => onChange(!value)} style={{
@@ -19,6 +15,12 @@ export default function SettingsPage({ settings, setSettings }) {
       </button>
     </div>
   );
+}
+
+export default function SettingsPage({ settings, setSettings }) {
+  const [local, setLocal] = useState(settings);
+
+  const save = () => setSettings(local);
 
   return (
     <div style={{ padding: "16px 20px", display: "flex", flexDirection: "column", gap: 10 }}>
@@ -42,9 +44,9 @@ export default function SettingsPage({ settings, setSettings }) {
 
       <div style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 4, padding: "16px 20px" }}>
         <div style={{ fontSize: 11, fontWeight: 600, color: "#666", marginBottom: 12, textTransform: "uppercase", letterSpacing: 0.8 }}>Notifications</div>
-        <Toggle label="Auto-Block High Risk" value={local.autoBlock} onChange={v => setLocal({ ...local, autoBlock: v })} />
-        <Toggle label="Email Alerts" value={local.emailAlerts} onChange={v => setLocal({ ...local, emailAlerts: v })} />
-        <Toggle label="SMS Alerts" value={local.smsAlerts} onChange={v => setLocal({ ...local, smsAlerts: v })} />
+        <ToggleSwitch label="Auto-Block High Risk" value={local.autoBlock} onChange={v => setLocal({ ...local, autoBlock: v })} />
+        <ToggleSwitch label="Email Alerts" value={local.emailAlerts} onChange={v => setLocal({ ...local, emailAlerts: v })} />
+        <ToggleSwitch label="SMS Alerts" value={local.smsAlerts} onChange={v => setLocal({ ...local, smsAlerts: v })} />
       </div>
 
       <button onClick={save} style={{ padding: "8px 20px", fontSize: 12, fontWeight: 600, background: "#0f0f0f", border: "1px solid #1a1a1a", borderRadius: 3, color: "#e5e5e5", cursor: "pointer", width: "fit-content" }}>

@@ -73,7 +73,7 @@ export function Sidebar() {
           <Shield className="w-4 h-4 text-white" />
         </div>
         <div>
-          <p className="font-bold text-sm text-gray-800 leading-tight">FFDS Core</p>
+          <p className="font-bold text-sm text-gray-800 leading-tight">Sentinel Core</p>
           <p className="text-[10px] text-gray-500 uppercase tracking-widest leading-tight">Enterprise</p>
         </div>
       </div>

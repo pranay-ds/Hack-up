@@ -30,17 +30,20 @@ export function CardSkeleton() {
 }
 
 export function TableSkeleton({ rows = 8, cols = 8 }) {
+  const headerWidth = (index) => 60 + ((index * 17) % 40);
+  const cellWidth = (row, col) => 50 + (((row * cols) + col) * 19) % 60;
+
   return (
     <div style={{ background: "#111", border: "1px solid #1a1a1a", borderRadius: 4, overflow: "hidden" }}>
       <div style={{ display: "flex", gap: 12, padding: "12px 16px", borderBottom: "1px solid #1a1a1a" }}>
         {Array.from({ length: cols }, (_, i) => (
-          <Skeleton key={i} width={60 + Math.random() * 40} height={10} />
+          <Skeleton key={i} width={headerWidth(i)} height={10} />
         ))}
       </div>
       {Array.from({ length: rows }, (_, r) => (
         <div key={r} style={{ display: "flex", gap: 12, padding: "10px 16px", borderBottom: "1px solid #1a1a1a" }}>
           {Array.from({ length: cols }, (_, c) => (
-            <Skeleton key={c} width={50 + Math.random() * 60} height={12} />
+            <Skeleton key={c} width={cellWidth(r, c)} height={12} />
           ))}
         </div>
       ))}

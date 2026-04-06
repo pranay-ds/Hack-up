@@ -57,7 +57,7 @@ export default function ServerLoginPage() {
             <h1 className="text-2xl font-bold tracking-tight text-gray-900">
               Server Console
             </h1>
-            <p className="text-gray-500 text-sm mt-1 font-medium">FFDS · Administrative Access</p>
+            <p className="text-gray-500 text-sm mt-1 font-medium">Sentinel · Administrative Access</p>
           </div>
 
           {/* Step indicator */}
@@ -76,7 +76,7 @@ export default function ServerLoginPage() {
                     type="text"
                     value={username}
                     onChange={e => setUsername(e.target.value)}
-                    placeholder="root@ffds-server"
+                    placeholder="root@sentinel-console"
                     className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:border-gray-500 transition-all font-mono bg-gray-50"
                   />
                 </div>

@@ -53,7 +53,9 @@ export default function FraudRingGraph({ fraudRings }) {
     if (riskFilter > 0) filtered = filtered.filter(n => n.risk_score >= riskFilter);
     if (typeFilter !== "all") filtered = filtered.filter(n => n.type === typeFilter);
     const filteredIds = new Set(filtered.map(n => n.id));
-    const filteredLinks = links.filter(l => filteredIds.has(l.source) && filteredIds.has(l.target));
+    const filteredLinks = links
+      .filter(l => filteredIds.has(l.source) && filteredIds.has(l.target))
+      .filter(l => showFraudRings || l.type !== "fraud_ring");
 
     return { nodes: filtered, links: filteredLinks };
   }, [fraudRings, showFraudRings, riskFilter, typeFilter]);
@@ -102,6 +104,18 @@ export default function FraudRingGraph({ fraudRings }) {
           }}>
             Fraud Rings {showFraudRings ? "ON" : "OFF"}
           </button>
+          <label style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 9, color: "#888" }}>
+            Min Risk
+            <input
+              type="range"
+              min="0"
+              max="0.9"
+              step="0.1"
+              value={riskFilter}
+              onChange={(e) => setRiskFilter(parseFloat(e.target.value))}
+              style={{ width: 60 }}
+            />
+          </label>
           <select value={typeFilter} onChange={e => setTypeFilter(e.target.value)} style={{
             fontSize: 9, background: "#0f0f0f", border: "1px solid #1a1a1a", borderRadius: 2, color: "#888", padding: "2px 4px",
           }}>

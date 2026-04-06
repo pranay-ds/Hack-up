@@ -64,7 +64,7 @@ export function Topbar() {
         </div>
 
         <span className="font-bold text-lg text-gray-800 tracking-tight">
-          <span className="text-[#387ed1]">FFDS</span> Core
+          <span className="text-[#387ed1]">Sentinel</span> Core
         </span>
         <div className="w-px h-6 bg-gray-200" />
         <span className="text-gray-600 font-medium text-sm bg-gray-50 px-3 py-1 rounded-full border border-gray-100">{currentLabel}</span>
