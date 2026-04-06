@@ -12,11 +12,7 @@ In simple terms, it does this:
 - Lets analysts take action from the UI
 
 Current public app link:
-- Frontend: `https://sentinel-frontend.onrender.com`
-
-Backend API link:
-- API: `https://sentinel-api.onrender.com/api/v1`
-- Health check: `https://sentinel-api.onrender.com/api/v1/health`
+- **Sentinel Live Dashboard:** `https://hackup-frontend.onrender.com`
 
 
 ## 2) Business Goal

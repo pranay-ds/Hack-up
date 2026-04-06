@@ -114,15 +114,14 @@ These can be used for fuller distributed mode, but the live deployed demo works 
 ## 7) Deployment Architecture
 
 ```
-Public Link
-  https://sentinel-frontend.onrender.com
+Public Link:
+*   **Sentinel Live Dashboard:** [https://hackup-frontend.onrender.com](https://hackup-frontend.onrender.com)
         |
         v
 Render Static Site (Frontend)
         |
         v
 Render Web Service (Backend API)
-  https://sentinel-api.onrender.com/api/v1
 ```
 
 Important detail:

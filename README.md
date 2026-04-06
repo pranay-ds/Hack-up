@@ -12,9 +12,7 @@
 
 The platform is fully deployed and accessible:
 
-*   **Analyst Dashboard:** [https://sentinel-frontend.onrender.com](https://sentinel-frontend.onrender.com)
-*   **Backend API:** [https://sentinel-api.onrender.com/api/v1](https://sentinel-api.onrender.com/api/v1)
-*   **System Health:** [https://sentinel-api.onrender.com/api/v1/health](https://sentinel-api.onrender.com/api/v1/health)
+*   **Sentinel Live Dashboard:** [https://hackup-frontend.onrender.com](https://hackup-frontend.onrender.com)
 
 ---
 
