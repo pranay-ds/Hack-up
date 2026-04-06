@@ -115,14 +115,14 @@ These can be used for fuller distributed mode, but the live deployed demo works 
 
 ```
 Public Link
-  https://hackup-frontend.onrender.com
+  https://sentinel-frontend.onrender.com
         |
         v
 Render Static Site (Frontend)
         |
         v
 Render Web Service (Backend API)
-  https://hackup-api.onrender.com/api/v1
+  https://sentinel-api.onrender.com/api/v1
 ```
 
 Important detail:

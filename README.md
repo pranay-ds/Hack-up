@@ -1,6 +1,6 @@
 # 🛡️ Project Sentinel: Real-Time Fraud Operations Platform
 
-[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://hackup-frontend.onrender.com)
+[![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://sentinel-frontend.onrender.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 [![Stack: FastAPI + React](https://img.shields.io/badge/Stack-FastAPI%20%2B%20React-blue?style=for-the-badge)](https://fastapi.tiangolo.com/)
 
@@ -12,9 +12,9 @@
 
 The platform is fully deployed and accessible:
 
-*   **Analyst Dashboard:** [https://hackup-frontend.onrender.com](https://hackup-frontend.onrender.com)
-*   **Backend API:** [https://hackup-api.onrender.com/api/v1](https://hackup-api.onrender.com/api/v1)
-*   **System Health:** [https://hackup-api.onrender.com/api/v1/health](https://hackup-api.onrender.com/api/v1/health)
+*   **Analyst Dashboard:** [https://sentinel-frontend.onrender.com](https://sentinel-frontend.onrender.com)
+*   **Backend API:** [https://sentinel-api.onrender.com/api/v1](https://sentinel-api.onrender.com/api/v1)
+*   **System Health:** [https://sentinel-api.onrender.com/api/v1/health](https://sentinel-api.onrender.com/api/v1/health)
 
 ---
 

@@ -12,11 +12,11 @@ In simple terms, it does this:
 - Lets analysts take action from the UI
 
 Current public app link:
-- Frontend: `https://hackup-frontend.onrender.com`
+- Frontend: `https://sentinel-frontend.onrender.com`
 
 Backend API link:
-- API: `https://hackup-api.onrender.com/api/v1`
-- Health check: `https://hackup-api.onrender.com/api/v1/health`
+- API: `https://sentinel-api.onrender.com/api/v1`
+- Health check: `https://sentinel-api.onrender.com/api/v1/health`
 
 
 ## 2) Business Goal
